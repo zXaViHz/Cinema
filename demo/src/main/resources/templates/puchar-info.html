@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase History</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .history-page {
+            background-color: #fff;
+            width: 100%;
+            height: 100%;
+        }
+
+        .history-page__title {
+            font-size: large;
+        }
+
+        hr {
+            color: #b4b3b3;
+        }
+
+        .search {
+            margin: auto;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 75%;
+            border: 1px solid #000;
+            border-radius: 20px;
+            padding: 1px;
+            margin-bottom: 10px;
+        }
+
+        .search__icon-background {
+            display: flex;
+            justify-content: center;
+            border: none;
+            margin: 0 5px;
+        }
+
+        .search__icon {
+            color: #000;
+            font-size: 25px;
+        }
+
+        .search__input-box {
+            font-size: 100%;
+            border: none;
+            width: 90%;
+        }
+
+        input[type='search']::-webkit-search-decoration,
+        input[type='search']::-webkit-search-cancel-button,
+        input[type='search']::-webkit-search-results-button,
+        input[type='search']::-webkit-search-results-decoration {
+            -webkit-appearance: none;
+        }
+
+        .search__input-box:focus {
+            outline: none;
+        }
+
+        .purchase {
+            display: flex;
+        }
+
+        .purchase__icon-background {
+            align-self: center;
+            margin: 10px;
+            border-radius: 35px;
+            display: flex;
+            background-color: #c0df85;
+        }
+
+        .purchase__icon {
+            padding: 10px;
+            font-size: 50px;
+            color: #fff;
+        }
+
+        .purchase__info {
+            margin: auto 0;
+        }
+
+        .purchase__title,
+        .purchase__date {
+            margin: 0;
+        }
+
+        .purchase__date {
+            padding: 3px 0 10px 0;
+            font-size: small;
+            color: #808080;
+        }
+
+        .purchase__price {
+            align-self: center;
+            margin-left: auto;
+        }
+
+        .purchase__details-btn {
+            background-color: #fff;
+            padding: 3px 10px;
+            border: solid 1px #000;
+            transition: ease-in-out 0.2s;
+        }
+
+        .purchase__details-btn:hover {
+            background-color: #c0df85;
+            color: #fff;
+            cursor: pointer;
+            border: solid 1px #c0df85;
+        }
+
+        @media (min-width: 750px) {
+            .history-page {
+                width: 750px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="history-page">
+        <h1 class="history-page__title">Purchase History</h1>
+        <hr />
+        <form class="form-inline" th:action="@{/search_ticket}" method="get">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="moiveName"
+              th:value="${moiveName}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+            <table class="table table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Movie</th>  
+                        <th>Showtime</th>
+                        <th>Show Date</th>
+                        <th>Theater</th>
+                        <th>Seats</th>
+                        <th>Price</th>
+                        <th>Food/Drinks</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ticket : ${tickets}">
+                        <td th:text="${ticket.ticketId}" style="width: 30px; white-space: nowrap;"></td>
+                        <td th:text="${ticket.movie.title}"></td> 
+                        <td th:text="${ticket.showtime.showTime}"></td>
+                        <td th:text="${ticket.showtime.showDate}"></td>
+                        <td th:text="${ticket.theater.theaterName}"></td>
+                        <td style="width: 200px; white-space: nowrap;">
+                            <span th:each="seat, iterStat : ${ticket.seats}">
+                                <span th:text="${seat.seatName}"></span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </td>                
+                        <td th:text="${ticket.price} + ' VND'"></td>
+                        <td>
+                            <ul>
+                                <li th:each="food : ${ticket.foods}" th:text="${food.foodName}"></li>
+                            </ul>
+                        </td>
+                            <!-- <a th:href="@{/purchasehistory/{UserId}(UserId=${purchase.user.UserId})}" class="btn btn-primary">View Detail</a> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+    </div>
+</body>
+
+  </body>
+
+
+</html>
