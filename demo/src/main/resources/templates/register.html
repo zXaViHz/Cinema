@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+    <script>
+        function sendOtp() {
+            var email = document.getElementById("email").value;
+            if (email) {
+                fetch('/sendOtp?email=' + email, { method: 'POST' })
+                    .then(response => response.text())
+                    .then(data => alert(data))
+                    .catch(error => console.error('Error:', error));
+            } else {
+                alert("Please enter your email first.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Register</h1>
+    <form th:action="@{/register}" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required/>
+        <br/>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required/>
+        <button type="button" onclick="sendOtp()">Send OTP</button>
+        <br/>
+
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone" required/>
+        <br/>
+
+        <label for="otp">OTP:</label>
+        <input type="text" id="otp" name="otp" required/>
+        <br/>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required/>
+        <br/>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div th:if="${error}">
+        <p style="color: red;" th:text="${error}"></p>
+    </div>
+    <div th:if="${message}">
+        <p style="color: green;" th:text="${message}"></p>
+    </div>
+
+    <a href="/login">Already have an account? Login here</a>
+</body>
+</html>
