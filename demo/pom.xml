@@ -145,7 +145,6 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
-		
 	</repositories>
 	
 	<!-- Plugin Repositories -->

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1, h2 {
+            color: #DB0000;
+        }
+        .table {
+            color: #fff;
+        }
+        .btn-primary {
+            background-color: #DB0000;
+            border-color: #DB0000;
+        }
+        .btn-secondary {
+            background-color: #333;
+            border-color: #333;
+        }
+        .btn-primary:hover, .btn-secondary:hover {
+            opacity: 0.8;
+        }
+        .navbar {
+            background-color: #000;
+            padding: 10px 100px;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .navbar .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        .navbar .logo span {
+            color: #DB0000;
+        }
+    </style>
+    <title>Thanh toán thành công</title>
+</head>
+
+<body>
+<!-- Navbar -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            Movie<span>Tic</span>
+        </div>
+        <nav>
+            <a href="/home">Home</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Body -->
+<div class="body py-5">
+    <div class="container">
+        <div class="w-50 m-auto">
+            <h1 class="my-3 text-success text-center">Thanh toán thành công</h1>
+            <h2 class="my-2 text-center">Chi tiết đơn hàng</h2>
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td>Thông tin đơn hàng:</td>
+                    <td><span th:text="${orderId}">[order ID]</span></td>
+                </tr>
+                <tr>
+                    <td>Tổng tiền:</td>
+                    <td><span th:text="${totalPrice}">[total price]</span></td>
+                </tr>
+                <tr>
+                    <td>Thời gian thanh toán:</td>
+                    <td><span th:text="${paymentTime}">[payment time]</span></td>
+                </tr>
+                <tr>
+                    <td>Mã giao dịch:</td>
+                    <td><span th:text="${transactionId}">[transaction ID]</span></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-center">
+                <a href="/home" class="btn btn-primary m-2">Về trang chủ</a>
+                <a href="/transactionHistory" class="btn btn-secondary m-2">Xem lịch sử giao dịch</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="text-center py-3">
+        <p>&copy; 2024 MovieTicket. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

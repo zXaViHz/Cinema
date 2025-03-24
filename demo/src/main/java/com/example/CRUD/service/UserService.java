@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.mo.Users;
 import com.example.CRUD.Repository.UserRepository;
 import com.example.CRUD.controller.InsufficientBalanceException;
+import com.example.mo.Users;
 
 import jakarta.mail.internet.MimeMessage;
 
@@ -99,7 +99,7 @@ public class UserService {
         String to = user.getEmail();
         String subject = "Account Verification";
         String content = "Dear [[name]],<br>" + "Please click the link below to verify your registration:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>" + "Thank you,<br>" + "Becoder";
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>" + "Thank you,<br>" + "MovieTic";
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -171,7 +171,7 @@ public class UserService {
     // Methods to deposit and withdraw money
     public void deposit(int userId, Double amount) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (amount > 0) {
             user.deposit(amount);
@@ -183,7 +183,7 @@ public class UserService {
 
     public void withdraw(int userId, Double amount) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (amount > 0 && user.getVirtualWallet() >= amount) {
             user.withdraw(amount);
@@ -196,7 +196,7 @@ public class UserService {
     // Method to add member points
     public void addMemberPoints(int userId, int points) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         user.addMemberPoints(points);
         userRepository.save(user);
@@ -205,7 +205,7 @@ public class UserService {
     // Method to deduct member points
     public void deductMemberPoints(int userId, int points) {
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         int currentPoints = user.getMemberPoints();
         if (points > currentPoints) {
@@ -214,5 +214,9 @@ public class UserService {
 
         user.setMemberPoints(currentPoints - points);
         userRepository.save(user);
+    }
+
+    public Users findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

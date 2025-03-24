@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.mo.Movie;
-import com.example.mo.Theater;
+import com.example.CRUD.config.FileUploadUtil;
 import com.example.CRUD.service.MovieService;
 import com.example.CRUD.service.TheaterService;
-import com.example.CRUD.config.FileUploadUtil;
+import com.example.mo.Movie;
+import com.example.mo.Theater;
 
 @Controller
 public class TheaterController {
@@ -47,44 +47,44 @@ public class TheaterController {
     }
 
     @PostMapping("/theater/save")
-    public String saveTheater(
-            @ModelAttribute("theater") Theater theater,
-            @RequestParam(value = "photoTheaterFile", required = false) MultipartFile multipartFile,
-            @RequestParam("movieID") String movieIDs, // Add this parameter to capture the movie IDs
-            RedirectAttributes ra, Principal principal) {
+public String saveTheater(
+        @ModelAttribute("theater") Theater theater,
+        @RequestParam(value = "photoTheaterFile", required = false) MultipartFile multipartFile,
+        @RequestParam("movieID") String movieIDs, // Add this parameter to capture the movie IDs
+        RedirectAttributes ra, Principal principal) {
 
-        try {
-            // Set cinemaOwnerID from Principal
-            theater.setCinemaOwnerID(getCinemaOwnerIDFromPrincipal(principal));
+    try {
+        // Set cinemaOwnerID from Principal
+        theater.setCinemaOwnerID(getCinemaOwnerIDFromPrincipal(principal));
 
-            // Parse movie IDs and associate with the theater
-            Set<Movie> movies = new HashSet<>();
-            for (String movieID : movieIDs.split(";")) {
-                Movie movie = movieService.getMovieById(Integer.parseInt(movieID.trim()));
-                if (movie != null) {
-                    movies.add(movie);
-                }
+        // Parse movie IDs and associate with the theater
+        Set<Movie> movies = new HashSet<>();
+        for (String movieID : movieIDs.split(";")) {
+            Movie movie = movieService.getMovieById(Integer.parseInt(movieID.trim()));
+            if (movie != null) {
+                movies.add(movie);
             }
-            theater.setMovies(movies);
-
-            // Handle file upload
-            if (multipartFile != null && !multipartFile.isEmpty()) {
-                String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-                theater.setPhotoTheater(fileName);
-                Theater savedTheater = service.save(theater);
-                String uploadDir = "theater-photo/" + savedTheater.getTheaterID();
-                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-            } else {
-                service.save(theater); // Save theater if no file is uploaded
-            }
-
-            ra.addFlashAttribute("message", "The theater has been saved successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            ra.addFlashAttribute("error", "Failed to save the theater due to an error: " + e.getMessage());
         }
-        return "redirect:/theater";
+        theater.setMovies(movies);
+
+        // Handle file upload
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            theater.setPhotoTheater(fileName);
+            Theater savedTheater = service.save(theater);
+            String uploadDir = "theater-photo/" + savedTheater.getTheaterID();
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        } else {
+            service.save(theater); // Save theater if no file is uploaded
+        }
+
+        ra.addFlashAttribute("message", "The theater has been saved successfully.");
+    } catch (IOException e) {
+        e.printStackTrace();
+        ra.addFlashAttribute("error", "Failed to save the theater due to an error: " + e.getMessage());
     }
+    return "redirect:/theater";
+}
 
     @GetMapping("/theater/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {

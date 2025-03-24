@@ -14,10 +14,19 @@ public interface MovieService {
     Movie saveMovie(Movie movie);
 
     void deleteMovie(Integer id);
+
     void updateAverageRating(Integer movieID);
+
     boolean isDuplicateTitle(String translatedTitle);
+
     boolean movieExistsByTitle(String title);
+
     List<Movie> getAllComingSoonMovies();
+
     List<Movie> getMoviesByGenre(String genre);
+
     List<Movie> findByCinemaOwnerID(int theaterId);
+
+    List<Movie> getAllMoviesForHomeCinemaOwner(int cinemaOwnerId);
+
 }

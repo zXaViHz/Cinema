@@ -41,7 +41,6 @@ public class TheaterService {
     public Integer findCinemaOwnerIdByTheaterId(Integer theaterId) {
         return repo.findCinemaOwnerIdByTheaterId(theaterId);
     }
-
     public List<Theater> getAllTheaters() {
         return repo.findAll();
     }

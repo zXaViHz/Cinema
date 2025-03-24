@@ -72,10 +72,6 @@ public class MovieServiceImpl implements MovieService {
         }
     }
 
-    public List<Movie> searchMovies(String keyword) {
-        return movieRepository.findByTitleContainingIgnoreCase(keyword);
-    }
-
     @Override
     public void updateAverageRating(Integer movieID) {
         List<Rating> ratings = ratingRepository.findByMovie_MovieID(movieID);
@@ -115,4 +111,8 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.findByCinemaOwnerID(theaterId);
     }
 
+    @Override
+    public List<Movie> getAllMoviesForHomeCinemaOwner(int cinemaOwnerId) {
+        return movieRepository.findByCinemaOwnerID(cinemaOwnerId);
+    }
 }

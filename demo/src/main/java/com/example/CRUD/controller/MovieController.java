@@ -95,7 +95,7 @@ public class MovieController {
             List<Theater> listTheater = theaterService.listAllByCinemaOwnerID(cinemaOwnerID);
             model.addAttribute("movie", movie);
             model.addAttribute("listTheater", listTheater);
-            return "movie-form2";
+            return "movie-form";
         }
         return "redirect:/movie";
     }
@@ -210,18 +210,6 @@ public class MovieController {
 
         model.addAttribute("user", user);
         return "book";
-    }
-
-    @GetMapping("/general/genre")
-    public String searchByGenre(@RequestParam("genre") String genre, Model model, Principal p) {
-        String email = p.getName();
-        Users user = userService.getUsersByEmail(email);
-        List<Movie> moviesByGenre = movieService.getMoviesByGenre(genre);
-        List<Movie> comingSoonMovies = movieService.getAllComingSoonMovies();
-        model.addAttribute("user", user);
-        model.addAttribute("comingSoonMovies", comingSoonMovies);
-        model.addAttribute("movies", moviesByGenre);
-        return "home";
     }
 
     private Integer getCinemaOwnerIDFromPrincipal(Principal principal) {

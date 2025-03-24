@@ -1,15 +1,27 @@
 package com.example.mo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import jakarta.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -75,9 +87,8 @@ public class Movie {
     @Column(name = "user_id")
     private List<Integer> cinemaOwnerVotes;
 
-    @ManyToMany
-    @JoinTable(name = "theater_movie", joinColumns = @JoinColumn(name = "theater_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
-    private Set<Movie> movies = new HashSet<>();
+    @ManyToMany(mappedBy = "movies")
+    private Set<Theater> theaters = new HashSet<>();
 
     public List<Integer> getCinemaOwnerVotes() {
         return cinemaOwnerVotes;

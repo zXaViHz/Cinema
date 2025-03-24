@@ -19,14 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.CRUD.Repository.CinemaOwnerRepository;
 import com.example.CRUD.Repository.UserRepository;
+import com.example.CRUD.service.MovieService;
 import com.example.CRUD.service.UserService;
-
+import com.example.mo.Movie;
 import com.example.mo.Users;
 
 @Controller
 @RequestMapping("/cinemaowner")
 public class CinemaController {
 
+	@Autowired
+	private MovieService movieService;
 	@Autowired
 	private UserRepository userRepo;
 	@Autowired
@@ -45,11 +48,11 @@ public class CinemaController {
 		}
 	}
 
-	
-
 	@GetMapping("/homecinemaowner")
-	public String homeCinemaOwner() {
-		return "homecinemaowner";
+	public String getAllMoviesForHomeCinemaOwner(Model model) {
+		List<Movie> movies = movieService.getAllMovies();
+		model.addAttribute("movies", movies);
+		return "homecinemaowner"; // Trả về homecinemaowner.html
 	}
 
 	@GetMapping("/profilecinemaowner")

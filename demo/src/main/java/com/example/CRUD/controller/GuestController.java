@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.CRUD.service.MovieService;
 import com.example.CRUD.service.NewsService;
 import com.example.CRUD.service.PromotionsService;
 import com.example.CRUD.service.TheaterService;
+import com.example.CRUD.service.MovieService;
 import com.example.mo.Movie;
 import com.example.mo.News;
 import com.example.mo.Promotions;
