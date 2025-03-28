@@ -47,51 +47,51 @@ public class TheaterController {
     }
 
     @PostMapping("/theater/save")
-public String saveTheater(
-        @ModelAttribute("theater") Theater theater,
-        @RequestParam(value = "photoTheaterFile", required = false) MultipartFile multipartFile,
-        @RequestParam("movieID") String movieIDs, // Add this parameter to capture the movie IDs
-        RedirectAttributes ra, Principal principal) {
+    public String saveTheater(
+            @ModelAttribute("theater") Theater theater,
+            @RequestParam(value = "photoTheaterFile", required = false) MultipartFile multipartFile,
+            @RequestParam("movieID") String movieIDs, // Add this parameter to capture the movie IDs
+            RedirectAttributes ra, Principal principal) {
 
-    try {
-        // Set cinemaOwnerID from Principal
-        theater.setCinemaOwnerID(getCinemaOwnerIDFromPrincipal(principal));
+        try {
+            // Set cinemaOwnerID from Principal
+            theater.setCinemaOwnerID(getCinemaOwnerIDFromPrincipal(principal));
 
-        // Parse movie IDs and associate with the theater
-        Set<Movie> movies = new HashSet<>();
-        for (String movieID : movieIDs.split(";")) {
-            Movie movie = movieService.getMovieById(Integer.parseInt(movieID.trim()));
-            if (movie != null) {
-                movies.add(movie);
+            // Parse movie IDs and associate with the theater
+            Set<Movie> movies = new HashSet<>();
+            for (String movieID : movieIDs.split(";")) {
+                Movie movie = movieService.getMovieById(Integer.parseInt(movieID.trim()));
+                if (movie != null) {
+                    movies.add(movie);
+                }
             }
-        }
-        theater.setMovies(movies);
+            theater.setMovies(movies);
 
-        // Handle file upload
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            theater.setPhotoTheater(fileName);
-            Theater savedTheater = service.save(theater);
-            String uploadDir = "theater-photo/" + savedTheater.getTheaterID();
-            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-        } else {
-            service.save(theater); // Save theater if no file is uploaded
-        }
+            // Handle file upload
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+                theater.setPhotoTheater(fileName);
+                Theater savedTheater = service.save(theater);
+                String uploadDir = "theater-photo/" + savedTheater.getTheaterID();
+                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+            } else {
+                service.save(theater); // Save theater if no file is uploaded
+            }
 
-        ra.addFlashAttribute("message", "The theater has been saved successfully.");
-    } catch (IOException e) {
-        e.printStackTrace();
-        ra.addFlashAttribute("error", "Failed to save the theater due to an error: " + e.getMessage());
+            ra.addFlashAttribute("message", "The theater has been saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            ra.addFlashAttribute("error", "Failed to save the theater due to an error: " + e.getMessage());
+        }
+        return "redirect:/theater";
     }
-    return "redirect:/theater";
-}
 
     @GetMapping("/theater/edit/{id}")
     public String showEditForm(@PathVariable("id") Integer id, Model model, RedirectAttributes ra) {
         try {
             Theater theater = service.get(id);
             model.addAttribute("theater", theater);
-            model.addAttribute("pageTitle", "Edit Theater (ID: " + id + ")");
+            model.addAttribute("pageTitle", "Edit Theater ");
             return "theater_form";
         } catch (TheaterNotFoundException e) {
             ra.addFlashAttribute("error", "Theater not found");

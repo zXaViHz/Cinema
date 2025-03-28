@@ -49,6 +49,7 @@ public class UserController {
     private TicketService ticketService;
     @Autowired
     private PromotionsService promotionsService;
+
     @ModelAttribute
     public void commonUser(Principal principal, Model model) {
         if (principal != null) {
@@ -95,13 +96,16 @@ public class UserController {
             throws IOException {
         String email = principal.getName();
         Users user = userService.getUsersByEmail(email);
-        String originalFilename = file.getOriginalFilename();
-        Path fileNameAndPath = Paths.get(System.getProperty("user.dir") + "/uploads", originalFilename);
-        Files.write(fileNameAndPath, file.getBytes());
-        user.setProfileImageURL(originalFilename);
-        userService.updateUser(user);
-        model.addAttribute("user", user);
-        return "redirect:/user/profile";
+
+        if (!file.isEmpty()) {
+            String originalFilename = file.getOriginalFilename();
+            Path fileNameAndPath = Paths.get(System.getProperty("user.dir") + "/uploads", originalFilename);
+            Files.write(fileNameAndPath, file.getBytes());
+            user.setProfileImageURL(originalFilename);
+            userService.updateUser(user);
+        }
+
+        return "redirect:/user/profile"; // Load lại trang để hiển thị avatar mới
     }
 
     @GetMapping("/update-profile")
@@ -137,8 +141,8 @@ public class UserController {
 
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("password") String password,
-                                 Principal principal,
-                                 Model model) {
+            Principal principal,
+            Model model) {
         String email = principal.getName();
         Users user = userService.getUsersByEmail(email);
         userService.updatePassword(user, password);
@@ -160,7 +164,7 @@ public class UserController {
         return "member-points";
     }
 
-        @GetMapping("/mytickets")
+    @GetMapping("/mytickets")
     public String ShowMyTickets(Model model, Principal principal) {
         String email = principal.getName();
         Users user = userService.getUsersByEmail(email);
@@ -169,6 +173,7 @@ public class UserController {
         model.addAttribute("tickets", tickets);
         return "mytickets";
     }
+
     @Autowired
     private TheaterService service;
 
@@ -251,6 +256,7 @@ public class UserController {
         // Return the view name
         return "newlist";
     }
+
     private Integer getCinemaOwnerIDFromPrincipal(Principal principal) {
         Users user = userService.getUsersByEmail(principal.getName());
         if (user == null) {

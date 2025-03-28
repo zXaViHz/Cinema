@@ -222,9 +222,6 @@
                 <a class="navbar-brand logo" href="/cinemaowner/homecinemaowner">Movie<span>Tic</span></a>
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a href="/cinemaowner/homecinemaowner" class="nav-link px-2 link-light">Home</a></li>
-                    <li><a href="#" class="nav-link px-2 link-secondary">Showtime</a></li>
-                    <li><a href="#" class="nav-link px-2 link-secondary">News</a></li>
-                    <li><a href="#" class="nav-link px-2 link-secondary">Contact</a></li>
                 </ul>
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
                     <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
@@ -257,17 +254,16 @@
                                     <div class="col-md-4 text-center">
                                         <div class="card1">
                                             <div class="card-body">
-                                                <form id="avatarForm" enctype="multipart/form-data" action="/cinemaowner/upload-avatar" method="post">
+                                                <form id="avatarForm" enctype="multipart/form-data">
                                                     <label for="fileInput" class="btn btn-secondary">Change Avatar</label>
-                                                    <button type="submit" class="btn btn-secondary">Upload</button>
-                                                    <input type="file" name="file" id="fileInput" accept="image/*" style="display: none;" onchange="validateFileSize()">
+                                                    <input type="file" name="file" id="fileInput" accept="image/*" style="display: none;" onchange="uploadAvatar()">
                                                     <div class="avatarPreview mb-3" id="avatarPreview">
-                                                        <img th:src="@{/uploads/{imageName}(imageName=${cinemaowner.profileImageURL})}" alt="Avatar">
+                                                        <img id="avatarImage" th:src="@{/uploads/{imageName}(imageName=${cinemaowner.profileImageURL})}" alt="Avatar">
                                                     </div>
-                                                </form> 
+                                                </form>
                                                 <span><strong><h2><span th:text="${cinemaowner.userName}"></span></h2></strong></span>
                                             </div>
-                                        </div>                                        
+                                        </div>                                       
                                     </div>
                                     <div class="col-md-8">
                                         <div class="container">
@@ -382,45 +378,31 @@
     </footer>
 
     <script>
-        document.getElementById('fileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('avatarPreview');
+       function uploadAvatar() {
+    var fileInput = document.getElementById("fileInput");
+    var file = fileInput.files[0];
+    if (!file) return;
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Xóa nội dung trước đó
-                    preview.innerHTML = '';
-                    // Tạo thẻ img mới và đặt src là dữ liệu của hình ảnh
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    preview.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            } else {
-                preview.innerHTML = '';
-            }
-        });
+    var formData = new FormData();
+    formData.append("file", file);
 
-        document.getElementById('fileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('currentAvatar');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Xóa nội dung trước đó
-                    preview.innerHTML = '';
-                    // Tạo thẻ img mới và đặt src là dữ liệu của hình ảnh
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    preview.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            } else {
-                preview.innerHTML = '';
-            }
-        });
+    fetch("/cinemaowner/upload-avatar", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("avatarImage").src = data.imageUrl; // Cập nhật ảnh ngay lập tức
+        } else {
+            alert("Upload failed: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Có lỗi xảy ra khi upload ảnh.");
+    });
+}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

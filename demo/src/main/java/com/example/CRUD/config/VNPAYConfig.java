@@ -1,6 +1,5 @@
 package com.example.CRUD.config;
 
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class VNPAYConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "/vnpay-payment-return";
-    public static String vnp_TmnCode = "BD1WVZLK";
-    public static String vnp_HashSecret = "OI7G28SB6KPFE52SWGDKF1FL0CZE0IO7";
+    public static String vnp_TmnCode = "VQ6RFWL8";
+    public static String vnp_HashSecret = "KVIJRACZ5GIK1LZPKKCDIBH2A80SWNXF";
 
     public static String hashAllFields(Map<String, String> fields) {
         List<String> fieldNames = new ArrayList<>(fields.keySet());
@@ -36,7 +35,7 @@ public class VNPAYConfig {
     public static String hmacSHA512(final String key, final String data) {
         try {
             if (key == null || data == null) {
-               // throw new NullPointerException("Key or data is null");
+                // throw new NullPointerException("Key or data is null");
             }
             Mac hmac512 = Mac.getInstance("HmacSHA512");
             byte[] hmacKeyBytes = key.getBytes(StandardCharsets.UTF_8);

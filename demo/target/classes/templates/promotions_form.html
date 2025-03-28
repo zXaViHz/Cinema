@@ -4,91 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>[[${pageTitle}]]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #1c1c1c;
         }
         .container {
-            background-color: #ffffff;
+            background-color: #343a40;
+            color: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
             max-width: 500px;
             margin: 50px auto;
         }
         h2 {
             text-align: center;
-            color: #007bff;
+            color: #00bcd4;
         }
         .form-group label {
             font-weight: bold;
         }
         .form-control {
-            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            border: 1px solid white;
+        }
+        .form-control:focus {
+            border-color: #00bcd4;
+            box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
         }
         .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: background-color 0.3s ease;
+            background-color: #00bcd4;
+            border-color: #00bcd4;
         }
         .btn-primary:hover {
-            background-color: #0056b3;
+            background-color: #008ba3;
         }
         .btn-secondary {
             background-color: #6c757d;
             border-color: #6c757d;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>[[${pageTitle}]]</h2>
-        <!-- Form for adding/editing promotions -->
-        <form th:action="@{/promotions/save}" method="post" th:object="${promotions}" enctype="multipart/form-data">
+        <form th:action="@{/promotions/save}" method="post" th:object="${promotions}" enctype="multipart/form-data" onsubmit="return validateForm()">
             <input type="hidden" th:field="*{promotionID}">
+            
             <div class="form-group mb-3">
                 <label for="movieID">Movie ID</label>
-                <input type="number" th:field="*{movieID}" class="form-control" id="movieID" required/>
+                <input type="number" th:field="*{movieID}" class="form-control required-field" id="movieID">
+                <span class="error-message">Movie ID không được bỏ trống</span>
             </div>
+            
             <div class="form-group mb-3">
                 <label for="promotionName">Promotion Name</label>
-                <input type="text" th:field="*{promotionName}" class="form-control" id="promotionName" required minlength="2" maxlength="50"/>
+                <input type="text" th:field="*{promotionName}" class="form-control required-field" id="promotionName" minlength="2" maxlength="50">
+                <span class="error-message">Tên khuyến mãi phải từ 2 đến 50 ký tự</span>
             </div>
+            
             <div class="form-group mb-3">
                 <label for="description">Description</label>
-                <textarea th:field="*{description}" class="form-control" id="description" required minlength="4" rows="4"></textarea>
+                <textarea th:field="*{description}" class="form-control required-field" id="description" minlength="4" rows="4"></textarea>
+                <span class="error-message">Mô tả ít nhất 4 ký tự</span>
             </div>
+            
             <div class="form-group mb-3">
-                <label for="discountRate">Discount Rate</label>
-                <input type="number" step="0.1" th:field="*{discountRate}" class="form-control" id="discountRate" required min="0" max="100"/>
+                <label for="discountRate">Discount Rate (%)</label>
+                <input type="number" step="0.1" th:field="*{discountRate}" class="form-control required-field" id="discountRate" min="0" max="100">
+                <span class="error-message">Giảm giá từ 0 đến 100%</span>
             </div>
+            
             <div class="form-group mb-3">
                 <label for="startDate">Start Date</label>
-                <input type="date" th:field="*{startDate}" class="form-control" id="startDate" required/>
+                <input type="date" th:field="*{startDate}" class="form-control required-field" id="startDate">
+                <span class="error-message">Chọn ngày bắt đầu hợp lệ</span>
             </div>
+            
             <div class="form-group mb-3">
                 <label for="endDate">End Date</label>
-                <input type="date" th:field="*{endDate}" class="form-control" id="endDate" required/>
+                <input type="date" th:field="*{endDate}" class="form-control required-field" id="endDate">
+                <span class="error-message">Chọn ngày kết thúc hợp lệ</span>
             </div>
+
             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Photo</label>
                 <div class="col-sm-8">
-                    <input type="file" name="image" accept="image/png, image/jpeg" class="form-control" />
+                    <input type="file" name="image" accept="image/png, image/jpeg" class="form-control">
                 </div>
             </div>
+
             <div class="text-center">
-                <button type="submit" class="btn btn-primary m-2">Save</button>
+                <button type="submit" class="btn btn-primary m-2" id="saveButton" disabled>Save</button>
                 <button type="button" class="btn btn-secondary m-2" onclick="cancelForm()">Cancel</button>
             </div>
         </form>
     </div>
-    <!-- Include Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script type="text/javascript">
+
+    <script>
         function cancelForm() {
             window.location.href = "/promotions";
+        }
+
+        function validateDiscountRate() {
+            let discountRateInput = document.getElementById("discountRate");
+            let discountError = discountRateInput.nextElementSibling;
+            let value = parseFloat(discountRateInput.value);
+
+            if (isNaN(value) || value < 0 || value > 100) {
+                discountError.style.display = "block";
+                discountRateInput.classList.add("invalid");
+                return false;
+            } else {
+                discountError.style.display = "none";
+                discountRateInput.classList.remove("invalid");
+                return true;
+            }
+        }
+
+        function validateDates() {
+            let startDate = document.getElementById("startDate");
+            let endDate = document.getElementById("endDate");
+            let startError = startDate.nextElementSibling;
+            let endError = endDate.nextElementSibling;
+            
+            if (!startDate.value) {
+                startError.style.display = "block";
+                return false;
+            } else {
+                startError.style.display = "none";
+            }
+            
+            if (!endDate.value || new Date(endDate.value) < new Date(startDate.value)) {
+                endError.style.display = "block";
+                return false;
+            } else {
+                endError.style.display = "none";
+            }
+            
+            return true;
+        }
+
+        function checkAllFields() {
+            let inputs = document.querySelectorAll(".required-field");
+            let saveButton = document.getElementById("saveButton");
+            let allValid = true;
+
+            inputs.forEach(input => {
+                let errorMsg = input.nextElementSibling;
+                if (!input.value.trim()) {
+                    errorMsg.style.display = "block";
+                    input.classList.add("invalid");
+                    allValid = false;
+                } else {
+                    errorMsg.style.display = "none";
+                    input.classList.remove("invalid");
+                }
+            });
+
+            if (allValid && validateDiscountRate() && validateDates()) {
+                saveButton.disabled = false;
+            } else {
+                saveButton.disabled = true;
+            }
+        }
+
+        function validateForm() {
+            checkAllFields();
+            return !document.getElementById("saveButton").disabled;
+        }
+
+        window.onload = function () {
+            setTimeout(checkAllFields, 100);
         };
     </script>
 </body>

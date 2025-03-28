@@ -4,55 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${pageTitle}">Showtime Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1c1c1c;
+        }
+        .form-container {
+            background-color: #343a40 ;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            margin: auto;
+            margin-top: 50px;
+        }
+        label { color: white; }
+        input {
+            background-color: #333;
+            color: white;
+            border: 1px solid white;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="text-center"><h2 th:text="${pageTitle}">Showtime Form</h2></div>
-        <form th:action="@{/showtime/save}" method="post" th:object="${showtime}" style="max-width: 500px; margin: 0 auto;">
-            <input type="hidden" th:field="*{showtimeID}">
-            <div class="border border-secondary rounded p-3">
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Movie ID:</label>
-                    <div class="col-sm-8">
-                        <input type="number" th:field="*{movieID}" class="form-control" required />
-                    </div>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center" style="color: blue;" th:text="${pageTitle}">Showtime Form</h2>
+            <form th:action="@{/showtime/save}" method="post" th:object="${showtime}" onsubmit="return validateForm()">
+                <input type="hidden" th:field="*{showtimeID}">
+
+                <div class="mb-3">
+                    <label>Movie ID:</label>
+                    <input type="number" th:field="*{movieID}" class="form-control required-field" required oninput="checkAllFields()" />
+                    <span class="error-message">Vui lòng nhập Movie ID</span>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Screening Room ID:</label>
-                    <div class="col-sm-8">
-                        <input type="number" th:field="*{screeningRoom.screeningRoomID}" class="form-control" required />
-                    </div>
+
+                <div class="mb-3">
+                    <label>Screening Room ID:</label>
+                    <input type="number" th:field="*{screeningRoom.screeningRoomID}" class="form-control required-field" required oninput="checkAllFields()" />
+                    <span class="error-message">Vui lòng nhập Screening Room ID</span>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Theater ID:</label>
-                    <div class="col-sm-8">
-                        <input type="number" th:field="*{theater.theaterID}" class="form-control" required />
-                    </div>
+
+                <div class="mb-3">
+                    <label>Theater ID:</label>
+                    <input type="number" th:field="*{theater.theaterID}" class="form-control required-field" required oninput="checkAllFields()" />
+                    <span class="error-message">Vui lòng nhập Theater ID</span>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Show Date:</label>
-                    <div class="col-sm-8">
-                        <input type="date" th:field="*{showDate}" class="form-control" required />
-                    </div>
+
+                <div class="mb-3">
+                    <label>Show Date:</label>
+                    <input type="date" th:field="*{showDate}" class="form-control required-field" required oninput="checkAllFields()" />
+                    <span class="error-message">Vui lòng chọn ngày chiếu</span>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Show Time:</label>
-                    <div class="col-sm-8">
-                        <input type="text" th:field="*{showTime}" class="form-control" placeholder="HH:MM:SS" required />
-                    </div>
+
+                <div class="mb-3">
+                    <label>Show Time:</label>
+                    <input type="text" id="showTimeInput" th:field="*{showTime}" class="form-control required-field" 
+                        placeholder="HH:MM:SS (VD: 14:30:00)" required oninput="validateShowTime(); checkAllFields();" />
+                    <span class="error-message" id="time-error">Thời gian không hợp lệ! Định dạng đúng: HH:MM:SS</span>
                 </div>
+
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary m-2">Save</button>
+                    <button type="submit" id="saveButton" class="btn btn-primary m-2" disabled>Save</button>
                     <button type="button" class="btn btn-secondary m-2" onclick="cancelForm()">Cancel</button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-    <script type="text/javascript">
+
+    <script>
         function cancelForm() {
             window.location.href = "/showtime";
         }
-    </script>
-</body>
-</html>
+
+        function validateShowTime() {
+            let showTimeInput = document.getElementById("showTimeInput");
+            let timeError = document.getElementById("time-error");
+            let regex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/; // Định dạng HH:MM:SS
+
+            if (!regex.test(showTimeInput.value.trim())) {
+                timeError.style.display = "block";
+                showTimeInput.classList.add("invalid");
+                return false;
+            } else {
+                timeError.style.display = "none";
+                showTimeInput.classList.remove("invalid");
+                return true;
+            }
+        }
+
+        function checkAllFields() {
+            let inputs = document.querySelectorAll(".required-field");
+            let saveButton = document.getElementById("saveButton");
+            let allValid = true;
+
+            inputs.forEach(input => {
+                let errorMsg = input.nextElementSibling;
+                if (!input.value.trim()) {
+                    errorMsg.style.display = "block";
+     
