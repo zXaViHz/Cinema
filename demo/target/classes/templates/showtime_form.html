@@ -108,4 +108,30 @@
                 let errorMsg = input.nextElementSibling;
                 if (!input.value.trim()) {
                     errorMsg.style.display = "block";
-     
+                    input.classList.add("invalid");
+                    allValid = false;
+                } else {
+                    errorMsg.style.display = "none";
+                    input.classList.remove("invalid");
+                }
+            });
+
+            if (allValid && validateShowTime()) {
+                saveButton.disabled = false;
+            } else {
+                saveButton.disabled = true;
+            }
+        }
+
+        function validateForm() {
+            checkAllFields();
+            return !document.getElementById("saveButton").disabled;
+        }
+
+        // Kiểm tra lại khi trang tải
+        window.onload = function () {
+            setTimeout(checkAllFields, 100);
+        };
+    </script>
+</body>
+</html>
