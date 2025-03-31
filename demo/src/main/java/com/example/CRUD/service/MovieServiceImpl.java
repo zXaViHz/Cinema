@@ -1,6 +1,9 @@
 package com.example.CRUD.service;
 
+import java.text.Normalizer;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,15 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final RatingRepository ratingRepository;
+
+    private String normalizeString(String str) {
+        if (str == null) {
+            return "";
+        }
+        String normalized = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("").toLowerCase().trim();
+    }
 
     @Autowired
     public MovieServiceImpl(MovieRepository movieRepository, UserRepository userRepository,
@@ -107,12 +119,101 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.findByGenre(genre);
     }
 
-    public List<Movie> findByCinemaOwnerID(int theaterId) {
-        return movieRepository.findByCinemaOwnerID(theaterId);
-    }
-
     @Override
     public List<Movie> getAllMoviesForHomeCinemaOwner(int cinemaOwnerId) {
         return movieRepository.findByCinemaOwnerID(cinemaOwnerId);
+    }
+
+    @Override
+    public List<Movie> getMoviesByLanguagesKeyword(String keyword) {
+        // Lấy tất cả các phim từ cơ sở dữ liệu
+        List<Movie> allMovies = movieRepository.findAll();
+
+        // Lọc các phim có phần trước dấu "-" trong languages khớp với từ khóa
+        return allMovies.stream()
+                .filter(movie -> {
+                    if (movie.getLanguages() != null) {
+                        // Lấy phần trước dấu "-" trong chuỗi languages
+                        String[] parts = movie.getLanguages().split(" - ");
+                        String languageBeforeDash = parts[0].trim().toLowerCase();
+                        return languageBeforeDash.contains(keyword.toLowerCase());
+                    }
+                    return false;
+                })
+                .toList();
+    }
+
+    @Override
+    public List<Movie> getMoviesByReleaseYearRange(int startYear, int endYear) {
+        return movieRepository.findByReleaseYearBetween(startYear, endYear);
+    }
+
+    @Override
+    public List<Movie> getMoviesBeforeReleaseYear(int year) {
+        return movieRepository.findByReleaseYearBefore(year);
+    }
+
+    @Override
+    public List<Movie> searchMovies(String keyword, String genre, String languages, String year) {
+        List<Movie> allMovies = movieRepository.findAll();
+
+        return allMovies.stream()
+                .filter(movie -> {
+                    boolean matches = true;
+
+                    // Lọc theo keyword (nếu có)
+                    if (keyword != null && !keyword.isEmpty()) {
+                        if (movie.getTitle() != null) {
+                            String normalizedTitle = normalizeString(movie.getTitle());
+                            String normalizedKeyword = normalizeString(keyword);
+                            matches = matches && normalizedTitle.contains(normalizedKeyword);
+                        } else {
+                            matches = false;
+                        }
+                    }
+
+                    // Lọc theo genre (nếu có)
+                    if (genre != null && !genre.isEmpty()) {
+                        if (movie.getGenre() != null) {
+                            matches = matches && genre.equalsIgnoreCase(movie.getGenre());
+                        } else {
+                            matches = false;
+                        }
+                    }
+
+                    // Lọc theo languages (nếu có)
+                    if (languages != null && !languages.isEmpty()) {
+                        if (movie.getLanguages() != null) {
+                            String[] parts = movie.getLanguages().split(" - ");
+                            String languageBeforeDash = parts[0].trim().toLowerCase();
+                            matches = matches && languageBeforeDash.contains(languages.toLowerCase());
+                        } else {
+                            matches = false;
+                        }
+                    }
+
+                    // Lọc theo year (nếu có)
+                    if (year != null && !year.isEmpty()) {
+                        if (year.equals("before2015")) {
+                            matches = matches && movie.getReleaseDate().toInstant()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .getYear() < 2015;
+                        } else {
+                            int selectedYear = Integer.parseInt(year);
+                            matches = matches && movie.getReleaseDate().toInstant()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                                    .getYear() == selectedYear;
+                        }
+                    }
+
+                    return matches;
+                })
+                .toList();
+    }
+
+    public List<Movie> findByCinemaOwnerID(int theaterId) {
+        return movieRepository.findByCinemaOwnerID(theaterId);
     }
 }
