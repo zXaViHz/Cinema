@@ -19,5 +19,14 @@ public interface MovieService {
     boolean movieExistsByTitle(String title);
     List<Movie> getAllComingSoonMovies();
     List<Movie> getMoviesByGenre(String genre);
+
+    // Tìm kiếm phim theo từ khóa trong languages
+    List<Movie> getMoviesByLanguagesKeyword(String keyword);
     List<Movie> findByCinemaOwnerID(int theaterId);
+
+    List<Movie> getMoviesByReleaseYearRange(int startYear, int endYear);
+
+    List<Movie> getMoviesBeforeReleaseYear(int year);
+
+    List<Movie> searchMovies(String keyword, String genre, String languages, String year);
 }

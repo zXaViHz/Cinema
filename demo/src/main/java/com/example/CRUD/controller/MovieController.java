@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.Arrays;
 
 import com.example.CRUD.service.MovieService;
 import com.example.CRUD.service.RatingService;
@@ -224,11 +225,86 @@ public class MovieController {
         return "home";
     }
 
+    @GetMapping("/general/languages")
+public String searchByLanguages(@RequestParam("languages") String languages, Model model, Principal principal) {
+    String email = principal.getName();
+    Users user = userService.getUsersByEmail(email);
+
+    // Xử lý chuỗi languages để lấy danh sách các từ khóa
+    String languageKeyword = languages.split(" - ")[0].trim(); // Lấy phần trước dấu "-"
+    languageKeyword = languageKeyword.toLowerCase(); // Chuyển về chữ thường để so sánh không phân biệt hoa/thường
+
+    // Lấy danh sách phim theo từ khóa ngôn ngữ
+    List<Movie> moviesByLanguages = movieService.getMoviesByLanguagesKeyword(languageKeyword);
+    List<Movie> comingSoonMovies = movieService.getAllComingSoonMovies();
+
+    // Thêm dữ liệu vào model
+    model.addAttribute("user", user);
+    model.addAttribute("comingSoonMovies", comingSoonMovies);
+    model.addAttribute("movies", moviesByLanguages);
+    model.addAttribute("languages", languages); // Gửi từ khóa ngôn ngữ về view
+
+    return "home";
+}
+
+@GetMapping("/general/year")
+public String searchByYear(@RequestParam("year") String year, Model model, Principal principal) {
+    String email = principal.getName();
+    Users user = userService.getUsersByEmail(email);
+
+    List<Movie> moviesByYear;
+    if (year.equals("before2015")) {
+        // Lấy phim trước năm 2015
+        moviesByYear = movieService.getMoviesBeforeReleaseYear(2015);
+    } else {
+        // Lấy phim trong khoảng năm
+        int selectedYear = Integer.parseInt(year);
+        moviesByYear = movieService.getMoviesByReleaseYearRange(selectedYear, selectedYear);
+    }
+
+    List<Movie> comingSoonMovies = movieService.getAllComingSoonMovies();
+
+    // Thêm dữ liệu vào model
+    model.addAttribute("user", user);
+    model.addAttribute("comingSoonMovies", comingSoonMovies);
+    model.addAttribute("movies", moviesByYear);
+    model.addAttribute("year", year); // Gửi năm đã chọn về view
+
+    return "home";
+}
     private Integer getCinemaOwnerIDFromPrincipal(Principal principal) {
         Users user = userService.getUsersByEmail(principal.getName());
         if (user == null) {
             throw new RuntimeException("User not found");
         }
         return user.getUserId(); // Ensure this returns the correct ID for cinema owner
+    }
+
+    @GetMapping("/general/search")
+    public String searchMovies(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "languages", required = false) String languages,
+            @RequestParam(value = "year", required = false) String year,
+            Model model,
+            Principal principal) {
+
+        String email = principal.getName();
+        Users user = userService.getUsersByEmail(email);
+
+        // Lấy danh sách phim dựa trên các tiêu chí tìm kiếm
+        List<Movie> movies = movieService.searchMovies(keyword, genre, languages, year);
+        List<Movie> comingSoonMovies = movieService.getAllComingSoonMovies();
+
+        // Thêm dữ liệu vào model
+        model.addAttribute("user", user);
+        model.addAttribute("comingSoonMovies", comingSoonMovies);
+        model.addAttribute("movies", movies);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("genre", genre);
+        model.addAttribute("languages", languages);
+        model.addAttribute("year", year);
+
+        return "home";
     }
 }

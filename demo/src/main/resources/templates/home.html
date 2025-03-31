@@ -170,33 +170,50 @@
 
       <div class="filter-search-box">
 
-          <div class="dropdown">
-            <button class="menu-btn">By Category</button>
-            <div class="dropdown-content">
-                <form action="/movie/general/genre" method="get">
-                    <button type="submit" class="manage" name="genre" value="Kinh Dị">Kinh Dị</button>
-                    <button type="submit" class="manage" name="genre" value="Hành Động">Hành Động</button>
-                    <button type="submit" class="manage" name="genre" value="Hài">Hài</button>
-                    <button type="submit" class="manage" name="genre" value="Phiêu Lưu">Phiêu Lưu</button>
-                    <button type="submit" class="manage" name="genre" value="Tình Cảm">Tình Cảm</button>
-                    <button type="submit" class="manage" name="genre" value="Viễn Tưởng">Viễn Tưởng</button>
-                    <button type="submit" class="manage" name="genre" value="Hoạt Hình">Hoạt Hình</button>
-                    <button type="submit" class="manage" name="genre" value="Khoa Học">Khoa Học</button>
-                    <button type="submit" class="manage" name="genre" value="Tội Phạm">Tội Phạm</button>
-                    <!-- Thêm các thể loại phim khác bạn muốn hỗ trợ -->
-                </form>
-            </div>
-          </div>
+        <form action="/movie/general/search" method="get">
+          <label for="keyword">Keyword:</label>
+          <input type="text" id="keyword" name="keyword" placeholder="Enter keyword">
       
+          <label for="genre">Genre:</label>
+          <select name="genre" id="genre">
+              <option value="">-- Select Genre --</option>
+              <option value="Hành Động">Hành Động</option>
+              <option value="Hài">Hài</option>
+              <option value="Phiêu Lưu">Phiêu Lưu</option>
+              <option value="Tình Cảm">Tình Cảm</option>
+              <option value="Viễn Tưởng">Viễn Tưởng</option>
+              <option value="Hoạt Hình">Hoạt Hình</option>
+              <option value="Tâm Lý">Tâm Lý</option>
+          </select>
       
-
-          <form action="/movie/search" method="GET">
-            <input type="text" name="keyword" placeholder="Nhập tên phim...">
-            <button type="submit">Tìm kiếm</button>
-            <div th:if="${message}" class="error-message">
-              <p th:text="${message}"></p>
-            </div>
-          </form>
+          <label for="languages">Languages:</label>
+          <select name="languages" id="languages">
+              <option value="">-- Select Language --</option>
+              <option value="Tiếng Anh">Tiếng Anh</option>
+              <option value="Tiếng Việt">Tiếng Việt</option>
+              <option value="Tiếng Quảng Đông">Tiếng Quảng Đông</option>
+              <option value="Tiếng Nhật">Tiếng Nhật</option>
+          </select>
+      
+          <label for="year">Year:</label>
+          <select name="year" id="year">
+              <option value="">-- Select Year --</option>
+              <option value="before2015">Before 2015</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+          </select>
+      
+          <button type="submit">Search</button>
+      </form>
 
       </div>
       <!----filter-search-box---->

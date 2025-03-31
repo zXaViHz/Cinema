@@ -40,7 +40,7 @@ public class Movie {
     private String cast;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "releaseDate", nullable = false)
+    @Column(name = "release_date", nullable = false)
     private Date releaseDate;
 
     @Column(name = "languages", nullable = false)
